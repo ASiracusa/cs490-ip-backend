@@ -9,7 +9,7 @@ app.get("/api/hello", (req, res) => {
 
 
 app.get("/api/top5Movies", (req, res) => {
-    const sql = 'SELECT F.title, COUNT(*) AS rented '
+    const sql = 'SELECT F.title, F.film_id '
         + 'FROM sakila.film AS F, sakila.rental AS R, sakila.inventory AS I '
         + 'WHERE F.film_id=I.film_ID AND R.inventory_id=I.inventory_id '
         + 'GROUP BY F.film_id ORDER BY COUNT(*) DESC LIMIT 5;';
@@ -21,6 +21,21 @@ app.get("/api/top5Actors", (req, res) => {
         + 'FROM sakila.film AS F, sakila.actor AS A, sakila.film_actor AS FA '
         + 'WHERE F.film_id=FA.film_id AND A.actor_id=FA.actor_id '
         + 'GROUP BY A.actor_id ORDER BY COUNT(*) DESC LIMIT 5;';
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/movieInfo", (req, res) => {
+    const sql = 'SELECT F.title, F.description, F.release_year, F.rental_rate, F.length, F.rating '
+        + 'FROM sakila.film AS F '
+        + 'WHERE F.film_id=' + req.query.filmId + ';';
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/actorsTopMovies", (req, res) => {
+    const sql = 'SELECT F.title, COUNT(*) AS rented '
+        + 'FROM sakila.film AS F, sakila.rental AS R, sakila.inventory AS I, sakila.film_actor as FA '
+        + 'WHERE F.film_id=I.film_ID AND R.inventory_id=I.inventory_id AND F.film_id=FA.film_id AND FA.actor_id=' + req.query.actorId + ' '
+        + 'GROUP BY F.film_id ORDER BY COUNT(*) DESC LIMIT 5;'
     makeQuery(res, sql, {});
 })
 
