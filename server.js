@@ -25,9 +25,9 @@ app.get("/api/top5Actors", (req, res) => {
 })
 
 app.get("/api/movieInfo", (req, res) => {
-    const sql = 'SELECT F.title, F.description, F.release_year, F.rental_rate, F.length, F.rating '
-        + 'FROM sakila.film AS F '
-        + 'WHERE F.film_id=' + req.query.filmId + ';';
+    const sql = 'SELECT F.title, F.description, F.release_year, F.rental_rate, F.length, F.rating, C.name AS genre '
+        + 'FROM sakila.film AS F, sakila.category AS C, sakila.film_category AS FC '
+        + 'WHERE F.film_id=' + req.query.filmId + ' AND F.film_id=FC.film_id AND FC.category_id=C.category_id;';
     makeQuery(res, sql, {});
 })
 
@@ -36,6 +36,23 @@ app.get("/api/actorsTopMovies", (req, res) => {
         + 'FROM sakila.film AS F, sakila.rental AS R, sakila.inventory AS I, sakila.film_actor as FA '
         + 'WHERE F.film_id=I.film_ID AND R.inventory_id=I.inventory_id AND F.film_id=FA.film_id AND FA.actor_id=' + req.query.actorId + ' '
         + 'GROUP BY F.film_id ORDER BY COUNT(*) DESC LIMIT 5;'
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/searchMovies", (req, res) => {
+    const hasFN = req.query.filmName.length > 0;
+    const hasAN = req.query.actorName.length > 0;
+    const hasFG = req.query.filmGenre.length > 0;
+    const sql = 'SELECT F.title, F.film_id '
+        + 'FROM sakila.film AS F'
+            + (hasAN ? ', sakila.actor AS A, sakila.film_actor AS FA' : '') 
+            + (hasFG ? ', sakila.category AS C, sakila.film_category AS FC' : '') 
+        + (hasFN || hasAN || hasFG ? ' WHERE ' : '')
+            + (hasFN ? "F.title LIKE '%" + req.query.filmName + "%'" : '')
+            + (hasAN ? (hasFN ? ' AND ' : '') + "F.film_id=FA.film_id AND FA.actor_id=A.actor_id AND CONCAT(A.first_name, ' ', A.last_name) LIKE '%" + req.query.actorName + "%'" : '')
+            + (hasFG ? (hasFN || hasAN ? ' AND ' : '') + "F.film_id=FC.film_id AND FC.category_id=C.category_id AND C.name='" + req.query.filmGenre + "'" : '')
+        + ' ORDER BY F.title ASC LIMIT 100;';
+    console.log(sql);
     makeQuery(res, sql, {});
 })
 
