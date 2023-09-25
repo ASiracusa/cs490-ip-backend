@@ -78,6 +78,14 @@ app.get("/api/searchCustomers", (req, res) => {
     makeQuery(res, sql, {});
 })
 
+app.get("/api/customersRentals", (req, res) => {
+    const sql = 'SELECT F.title, R.rental_date, R.return_date, I.store_id '
+        + 'FROM sakila.rental AS R, sakila.inventory AS I, sakila.film AS F '
+        + 'WHERE R.customer_id=' + req.query.customerId + ' AND R.inventory_id=I.inventory_id AND I.film_id=F.film_id'
+        + ' ORDER BY R.rental_date DESC;';
+    makeQuery(res, sql, {});
+})
+
 app.listen(5000, () => {console.log("Server started on port 5000.")});
 
 function makeQuery (res, sql, jsonParams) {
