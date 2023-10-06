@@ -79,10 +79,24 @@ app.get("/api/searchCustomers", (req, res) => {
 })
 
 app.get("/api/customersRentals", (req, res) => {
-    const sql = 'SELECT F.title, R.rental_date, R.return_date, I.store_id '
+    const sql = 'SELECT F.title, R.rental_id, R.rental_date, R.return_date, I.store_id, R.inventory_id '
         + 'FROM sakila.rental AS R, sakila.inventory AS I, sakila.film AS F '
         + 'WHERE R.customer_id=' + req.query.customerId + ' AND R.inventory_id=I.inventory_id AND I.film_id=F.film_id'
         + ' ORDER BY R.rental_date DESC;';
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/returnRental", (req, res) => {
+    const sql = 'UPDATE sakila.rental '
+        + 'SET return_date=NOW(), last_update=CURRENT_TIMESTAMP()'
+        + 'WHERE rental_id=' + req.query.rentalId + ';';
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/returnRentalInv", (req, res) => {
+    const sql = 'UPDATE sakila.inventory '
+        + 'SET last_update=CURRENT_TIMESTAMP()'
+        + 'WHERE inventory_id=' + req.query.inventoryId + ';';
     makeQuery(res, sql, {});
 })
 
