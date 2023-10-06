@@ -100,6 +100,16 @@ app.get("/api/returnRentalInv", (req, res) => {
     makeQuery(res, sql, {});
 })
 
+app.get("/api/deleteCustomer", (req, res) => {
+    const sql = 'DELETE FROM sakila.payment '
+            + 'WHERE customer_id=' + req.query.customerId + '; '
+        + 'DELETE FROM sakila.rental '
+            + 'WHERE customer_id=' + req.query.customerId + '; '
+        + 'DELETE FROM sakila.customer '
+            + 'WHERE customer_id=' + req.query.customerId + ';';
+    makeQuery(res, sql, {});
+})
+
 app.listen(5000, () => {console.log("Server started on port 5000.")});
 
 function makeQuery (res, sql, jsonParams) {

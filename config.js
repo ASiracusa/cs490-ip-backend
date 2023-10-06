@@ -4,7 +4,8 @@ const config = {
         user: "root",
         password: "{!}5qu1rr3l{!}",
         database: "sakila",
-        connectTimeout: 60000
+        connectTimeout: 60000,
+        multipleStatements: true
     },
 };
 
