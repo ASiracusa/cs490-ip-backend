@@ -32,7 +32,7 @@ app.get("/api/movieInfo", (req, res) => {
 })
 
 app.get("/api/customerInfo", (req, res) => {
-    const sql = 'SELECT C.customer_id, C.first_name, C.last_name, C.email, C.active, C.store_id, C.create_date, A.address, Ci.city, Co.country '
+    const sql = 'SELECT C.customer_id, C.first_name, C.last_name, C.email, C.active, C.store_id, C.create_date, A.address, Ci.city, Co.country, A.address_id '
         + 'FROM sakila.customer AS C, sakila.address AS A, sakila.city AS Ci, sakila.country AS Co '
         + 'WHERE C.customer_id=' + req.query.customerId + ' AND C.address_id=A.address_id AND A.city_id=Ci.city_id AND Ci.country_id=Co.country_id;';
     makeQuery(res, sql, {});
@@ -106,6 +106,13 @@ app.get("/api/deleteCustomer", (req, res) => {
         + 'DELETE FROM sakila.rental '
             + 'WHERE customer_id=' + req.query.customerId + '; '
         + 'DELETE FROM sakila.customer '
+            + 'WHERE customer_id=' + req.query.customerId + ';';
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/updateCustomerDetails", (req, res) => {
+    const sql = 'UPDATE sakila.customer '
+            + "SET first_name='" + req.query.firstName + "', last_name='" + req.query.lastName + "', active=" + req.query.active + ", email='" + req.query.email + "', store_id=" + req.query.storeId + " "
             + 'WHERE customer_id=' + req.query.customerId + ';';
     makeQuery(res, sql, {});
 })
