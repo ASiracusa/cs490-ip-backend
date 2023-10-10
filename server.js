@@ -117,6 +117,45 @@ app.get("/api/updateCustomerDetails", (req, res) => {
     makeQuery(res, sql, {});
 })
 
+app.get("/api/getCountry", (req, res) => {
+    const sql = 'SELECT Co.country_id '
+        + 'FROM sakila.country AS Co '
+        + "WHERE Co.country='" + req.query.country + "';";
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/addCountry", (req, res) => {
+    const sql = 'INSERT INTO sakila.country (country)'
+        + "VALUES ('" + req.query.country + "');"
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/getCity", (req, res) => {
+    const sql = 'SELECT Ci.city_id '
+        + 'FROM sakila.city AS Ci '
+        + "WHERE Ci.city='" + req.query.city + "' AND Ci.country_id=" + req.query.countryId + ";";
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/addCity", (req, res) => {
+    const sql = 'INSERT INTO sakila.city (city, country_id)'
+        + "VALUES ('" + req.query.city + "', '" + req.query.countryId + "');";
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/updateAddress", (req, res) => {
+    const sql = 'UPDATE sakila.address '
+        + "SET address='" + req.query.address + "', city_id=" + req.query.cityId + " "
+        + "WHERE address_id=" + req.query.addressId + ";";
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/addAddress", (req, res) => {
+    const sql = 'INSERT INTO sakila.address (address, city_id)'
+        + "VALUES ('" + req.query.address + "', " + req.query.cityId + ");";
+    makeQuery(res, sql, {});
+})
+
 app.listen(5000, () => {console.log("Server started on port 5000.")});
 
 function makeQuery (res, sql, jsonParams) {
