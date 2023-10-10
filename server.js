@@ -117,6 +117,12 @@ app.get("/api/updateCustomerDetails", (req, res) => {
     makeQuery(res, sql, {});
 })
 
+app.get("/api/addCustomer", (req, res) => {
+    const sql = 'INSERT INTO sakila.customer (first_name, last_name, active, email, store_id, address_id) '
+            + "VALUES ('" + req.query.firstName + "', '" + req.query.lastName + "', " + req.query.active + ", '" + req.query.email + "', " + req.query.storeId + ", " + req.query.addressId + ");";
+    makeQuery(res, sql, {});
+})
+
 app.get("/api/getCountry", (req, res) => {
     const sql = 'SELECT Co.country_id '
         + 'FROM sakila.country AS Co '
@@ -153,6 +159,13 @@ app.get("/api/updateAddress", (req, res) => {
 app.get("/api/addAddress", (req, res) => {
     const sql = 'INSERT INTO sakila.address (address, city_id)'
         + "VALUES ('" + req.query.address + "', " + req.query.cityId + ");";
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/getAddress", (req, res) => {
+    const sql = 'SELECT A.address_id '
+        + 'FROM sakila.address AS A '
+        + "WHERE A.address='" + req.query.address + "' AND A.city_id=" + req.query.cityId + ";";
     makeQuery(res, sql, {});
 })
 
