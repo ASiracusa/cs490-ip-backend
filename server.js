@@ -25,7 +25,7 @@ app.get("/api/top5Actors", (req, res) => {
 })
 
 app.get("/api/movieInfo", (req, res) => {
-    const sql = 'SELECT F.title, F.description, F.release_year, F.rental_rate, F.length, F.rating, C.name AS genre '
+    const sql = 'SELECT F.film_id, F.title, F.description, F.release_year, F.rental_rate, F.length, F.rating, C.name AS genre '
         + 'FROM sakila.film AS F, sakila.category AS C, sakila.film_category AS FC '
         + 'WHERE F.film_id=' + req.query.filmId + ' AND F.film_id=FC.film_id AND FC.category_id=C.category_id;';
     makeQuery(res, sql, {});
@@ -60,6 +60,30 @@ app.get("/api/searchMovies", (req, res) => {
             + (hasFG ? (hasFN || hasAN ? ' AND ' : '') + "F.film_id=FC.film_id AND FC.category_id=C.category_id AND C.name='" + req.query.filmGenre + "'" : '')
         + ' ORDER BY F.title ASC LIMIT 100;';
     console.log(sql);
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/verifyCustomer", (req, res) => {
+    const sql = 'SELECT C.first_name, C.last_name, C.customer_id '
+        + 'FROM sakila.customer AS C '
+        + 'WHERE C.customer_id=' + req.query.customerId + ';';
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/getMovieInventory", (req, res) => {
+    const sql = 'SELECT I.store_id, I.inventory_id, I.inventory_id IN (SELECT R.inventory_id FROM sakila.rental AS R WHERE R.return_date IS NULL) AS rented '
+        + 'FROM sakila.film AS F, sakila.inventory AS I '
+        + 'WHERE F.film_id=' + req.query.filmId + ' AND F.film_id=I.film_id '
+        + 'ORDER BY I.store_id ASC;';
+    makeQuery(res, sql, {});
+})
+
+app.get("/api/rentMovie", (req, res) => {
+    const sql = 'INSERT INTO sakila.rental (rental_date, inventory_id, customer_id, staff_id) '
+            + "VALUES (NOW(), " + req.query.inventoryId + ", " + req.query.customerId + ", 1); "
+        + "UPDATE sakila.inventory "
+            + "SET last_update=CURRENT_TIMESTAMP() "
+            + "WHERE inventory_id=" + req.query.inventoryId + ";";
     makeQuery(res, sql, {});
 })
 
