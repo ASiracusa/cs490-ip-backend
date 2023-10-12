@@ -193,6 +193,14 @@ app.get("/api/getAddress", (req, res) => {
     makeQuery(res, sql, {});
 })
 
+app.get("/api/getAllRentals", (req, res) => {
+    const sql = 'SELECT R.rental_id, R.rental_date, R.customer_id, R.return_date, I.inventory_id, F.title, f.rental_rate, C.first_name, C.last_name '
+	    + "FROM sakila.rental AS R, sakila.inventory AS I, sakila.film AS F, sakila.customer AS C "
+	    + "WHERE R.inventory_id=I.inventory_id AND I.film_id=F.film_id AND R.customer_id=C.customer_id "
+        + "ORDER BY R.rental_id ASC;";
+    makeQuery(res, sql, {});
+})
+
 app.listen(5000, () => {console.log("Server started on port 5000.")});
 
 function makeQuery (res, sql, jsonParams) {
